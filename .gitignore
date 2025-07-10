@@ -1,0 +1,8 @@
+/.idea/
+/dist/
+/insightlog.egg-info/
+*.pyc
+*.egg
+/venv/
+/build/
+__pycache__/
