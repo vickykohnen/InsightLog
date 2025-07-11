@@ -40,5 +40,4 @@
   - Add a Try / Except structure and include the following Except errors:
     -FileNotFoundError                                                                    
     -IOError
-    -EnvironmentError
   - For these exceptions, log and raise an error  

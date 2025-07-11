@@ -47,7 +47,6 @@ def get_date_filter(settings, minute=datetime.now().minute, hour=datetime.now().
         raise Exception("Date elements aren't valid")
     return date_filter
 
-
 def filter_data(log_filter, data=None, filepath=None, is_casesensitive=True, is_regex=False, is_reverse=False):
     """
     Filter received data/file content and return the results
@@ -77,7 +76,7 @@ def filter_data(log_filter, data=None, filepath=None, is_casesensitive=True, is_
             # TODO: Log error instead of print - (in bug-fix-filter-data - VK) 
             # raise  # Should raise instead of just printing- (in bug-fix-filter-data - VK)
             logging.error(e)
-            raise IOError(e)
+            raise IOError(f"Error in opening file {filepath}")
     elif data:
         for line in data.splitlines():
             if check_match(line, log_filter, is_regex, is_casesensitive, is_reverse):
@@ -85,7 +84,14 @@ def filter_data(log_filter, data=None, filepath=None, is_casesensitive=True, is_
         return return_data
     else:
         # TODO: Better error message for missing data/filepath (in bug-fix-filter-data - VK) 
-        raise Exception(e)
+        if not filepath:
+            if len(data) == 0:
+                print("data and file empty")
+                raise Exception(f"Data and file {filepath} are empty")
+            else:
+                raise Exception(f"File {filepath} is empty")                
+        else:
+            raise Exception("Data is empty")
 
 def check_match(line, filter_pattern, is_regex, is_casesensitive, is_reverse):
     """
@@ -319,13 +325,10 @@ class InsightLogAnalyzer:
                             to_return += line    
             except FileNotFoundError as e: 
                 logging.error(e)
-                raise FileNotFoundError(e)                                                                    
+                raise FileNotFoundError()                                                                    
             except (IOError) as e:
                 logging.error(e)
-                raise IOError(e)  
-            except (EnvironmentError) as e:
-                logging.error(e)
-                raise EnvironementError(e)                    
+                raise IOError()                  
                               
         return to_return
 
