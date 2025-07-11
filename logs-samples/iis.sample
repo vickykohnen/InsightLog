@@ -1,0 +1,5 @@
+#Software: Microsoft Internet Information Services 7.5
+#Version: 1.0
+#Date: 2020-09-08 09:30:26
+#Fields: date time s-sitename s-ip cs-method cs-uri-stem cs-uri-query s-port cs-username c-ip cs(User-Agent) sc-status sc-substatus sc-win32-status sc-bytes cs-bytes time-taken
+2009-11-26 06:14:21 W3SVC692644773 125.67.67.* GET /index.html - 80 - 10.10.10.10 Baiduspider+(+http://www.example.com)200 0 64 185173 296 0
