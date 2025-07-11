@@ -43,3 +43,9 @@ def is_valid_minute(minute):
     return (minute == '*') or (59 >= minute >= 0)
 
 
+def is_2xx(code_str):
+    try:
+        code = int(code_str)
+        return 200 <= code < 300
+    except ValueError:
+        return False

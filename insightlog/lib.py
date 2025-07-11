@@ -88,6 +88,9 @@ def filter_data(log_filter, data=None, filepath=None, is_casesensitive=True, is_
         raise Exception("Data and filepath values are NULL!")
 
 
+
+
+
 def check_match(line, filter_pattern, is_regex, is_casesensitive, is_reverse):
     """
     Check if line contains/matches filter pattern
