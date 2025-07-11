@@ -275,7 +275,7 @@ class InsightLogAnalyzer:
         :return:
         """
         # BUG: This method does not remove by index
-        self.__filters.remove(index)
+        self.__filters.pop(index) 
 
     def clear_all_filters(self):
         """
