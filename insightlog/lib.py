@@ -65,6 +65,8 @@ def filter_data(log_filter, data=None, filepath=None, is_casesensitive=True, is_
     # BUG: No encoding handling in file reading (may crash on non-UTF-8 files)
     # TODO: Log errors/warnings instead of print 
     return_data = ""
+    print(f"Filter_data function ; Data is {data} ; Filepath is {filepath}")
+
     if filepath:
         try:
             with open(filepath, 'r') as file_object:
@@ -75,6 +77,7 @@ def filter_data(log_filter, data=None, filepath=None, is_casesensitive=True, is_
         except (IOError, EnvironmentError) as e:
             # TODO: Log error instead of print - (in bug-fix-filter-data - VK) 
             # raise  # Should raise instead of just printing- (in bug-fix-filter-data - VK)
+            print("will raise an IOError")
             logging.error(e)
             raise IOError(f"Error in opening file {filepath}")
     elif data:
@@ -85,13 +88,7 @@ def filter_data(log_filter, data=None, filepath=None, is_casesensitive=True, is_
     else:
         # TODO: Better error message for missing data/filepath (in bug-fix-filter-data - VK) 
         if not filepath:
-            if len(data) == 0:
-                print("data and file empty")
-                raise Exception(f"Data and file {filepath} are empty")
-            else:
-                raise Exception(f"File {filepath} is empty")                
-        else:
-            raise Exception("Data is empty")
+            raise Exception("File name not provided")                
 
 
 
@@ -281,7 +278,7 @@ class InsightLogAnalyzer:
         :return:
         """
         # BUG: This method does not remove by index
-        self.__filters.remove(index)
+        self.__filters.pop(index) 
 
     def clear_all_filters(self):
         """

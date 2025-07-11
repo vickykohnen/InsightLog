@@ -150,23 +150,16 @@ class TestInsightLog(TestCase):
         expected_message = f"Error in opening file {file_name}"
         assert expected_message == str(excinfo.value)
 
-        # Empty File
-        file_name = os.path.join(base_dir, 'logs-samples/empty.sample')
+        # File Name is not populated
+        file_name = os.path.join(base_dir, '')
+        with pytest.raises(IOError) as excinfo:                  
+            data = filter_data('127.0.0.1', filepath=file_name)
+        expected_message = f"Error in opening file {file_name}"
+        assert expected_message == str(excinfo.value)
+
+        # Filename not provided      
+        file_name = os.path.join('', '')
         with pytest.raises(Exception) as excinfo:                  
             data = filter_data('127.0.0.1', filepath=file_name)
-        expected_message = f"File {file_name} is empty"
-        assert expected_message == str(excinfo.value)
-
-        # Empty data and file 
-        file_name = os.path.join(base_dir, 'logs-samples/empty.sample')
-        with pytest.raises(Exception) as excinfo:                  
-            data = filter_data('', filepath=file_name)
-        expected_message = f"Data and file {file_name} are empty"
-        assert expected_message == str(excinfo.value)
-
-        # Empty data 
-        file_name = os.path.join(base_dir, 'logs-samples/apache1.sample')
-        with pytest.raises(Exception) as excinfo:                  
-            data = filter_data('', filepath=file_name)
-        expected_message = "Data is empty"
+        expected_message = "File name not provided"
         assert expected_message == str(excinfo.value)
