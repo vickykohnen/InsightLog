@@ -35,3 +35,10 @@
 - **How to replicate:**
   - Analyze a very large log file (hundreds of MBs or more).
   - May cause high memory usage or crash. 
+
+## 8. There is no Exception/Error handling in file_all when Opening the file
+  - Add a Try / Except structure and include the following Except errors:
+    -FileNotFoundError                                                                    
+    -IOError
+    -EnvironmentError
+  - For these exceptions, log and raise an error  
