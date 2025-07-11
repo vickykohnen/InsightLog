@@ -1,7 +1,7 @@
 import os
 from unittest import TestCase
 from insightlog.lib import *
-
+import pytest
 
 class TestInsightLog(TestCase):
 
@@ -49,7 +49,7 @@ class TestInsightLog(TestCase):
         data = filter_data(date_filter, data=data)
         self.assertEqual(len(data.split("\n")), 19, "filter_data#3")
         data = filter_data('120.25.229.167', filepath=file_name, is_reverse=True)
-        self.assertFalse('120.25.229.167' in data, "filter_data#4")
+        self.assertFalse('120.25.229.167' in data, "filter_data#4")       
 
     def test_get_web_requests(self):
         nginx_settings = get_service_settings('nginx')
@@ -138,3 +138,35 @@ class TestInsightLog(TestCase):
         data = filter_data('120.25.229.167', filepath=file_name, is_reverse=True)
         self.assertFalse('120.25.229.167' in data, "filter_data#4")
 # TODO: Add more tests for edge cases and error handling
+
+# bug-fix-filter-data test case:
+
+    def test_files_testing_filter_data(self):
+        # IO error
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        file_name = os.path.join(base_dir, 'logs-samples/apache1.samplex')
+        with pytest.raises(IOError) as excinfo:                  
+            data = filter_data('127.0.0.1', filepath=file_name)
+        expected_message = f"Error in opening file {file_name}"
+        assert expected_message == str(excinfo.value)
+
+        # Empty File
+        file_name = os.path.join(base_dir, 'logs-samples/empty.sample')
+        with pytest.raises(Exception) as excinfo:                  
+            data = filter_data('127.0.0.1', filepath=file_name)
+        expected_message = f"File {file_name} is empty"
+        assert expected_message == str(excinfo.value)
+
+        # Empty data and file 
+        file_name = os.path.join(base_dir, 'logs-samples/empty.sample')
+        with pytest.raises(Exception) as excinfo:                  
+            data = filter_data('', filepath=file_name)
+        expected_message = f"Data and file {file_name} are empty"
+        assert expected_message == str(excinfo.value)
+
+        # Empty data 
+        file_name = os.path.join(base_dir, 'logs-samples/apache1.sample')
+        with pytest.raises(Exception) as excinfo:                  
+            data = filter_data('', filepath=file_name)
+        expected_message = "Data is empty"
+        assert expected_message == str(excinfo.value)

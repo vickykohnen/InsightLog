@@ -3,7 +3,7 @@ import calendar
 from insightlog.settings import *
 from insightlog.validators import *
 from datetime import datetime
-
+import logging
 
 def get_service_settings(service_name):
     """
@@ -47,7 +47,6 @@ def get_date_filter(settings, minute=datetime.now().minute, hour=datetime.now().
         raise Exception("Date elements aren't valid")
     return date_filter
 
-
 def filter_data(log_filter, data=None, filepath=None, is_casesensitive=True, is_regex=False, is_reverse=False):
     """
     Filter received data/file content and return the results
@@ -62,9 +61,9 @@ def filter_data(log_filter, data=None, filepath=None, is_casesensitive=True, is_
     :param is_reverse: boolean to inverse selection
     :return: string
     """
-    # BUG: This function returns None on error instead of raising
+    # BUG: This function returns None on error instead of raising 
     # BUG: No encoding handling in file reading (may crash on non-UTF-8 files)
-    # TODO: Log errors/warnings instead of print
+    # TODO: Log errors/warnings instead of print 
     return_data = ""
     if filepath:
         try:
@@ -74,19 +73,25 @@ def filter_data(log_filter, data=None, filepath=None, is_casesensitive=True, is_
                         return_data += line
             return return_data
         except (IOError, EnvironmentError) as e:
-            print(e.strerror)
-            # TODO: Log error instead of print
-            # raise  # Should raise instead of just printing
-            return None
+            # TODO: Log error instead of print - (in bug-fix-filter-data - VK) 
+            # raise  # Should raise instead of just printing- (in bug-fix-filter-data - VK)
+            logging.error(e)
+            raise IOError(f"Error in opening file {filepath}")
     elif data:
         for line in data.splitlines():
             if check_match(line, log_filter, is_regex, is_casesensitive, is_reverse):
                 return_data += line+"\n"
         return return_data
     else:
-        # TODO: Better error message for missing data/filepath
-        raise Exception("Data and filepath values are NULL!")
-
+        # TODO: Better error message for missing data/filepath (in bug-fix-filter-data - VK) 
+        if not filepath:
+            if len(data) == 0:
+                print("data and file empty")
+                raise Exception(f"Data and file {filepath} are empty")
+            else:
+                raise Exception(f"File {filepath} is empty")                
+        else:
+            raise Exception("Data is empty")
 
 
 
@@ -313,10 +318,21 @@ class InsightLogAnalyzer:
                 if self.check_all_matches(line, self.__filters):
                     to_return += line+"\n"
         else:
-            with open(self.filepath, 'r') as file_object:
-                for line in file_object:
-                    if self.check_all_matches(line, self.__filters):
-                        to_return += line
+            # added try except to cater to IO Error such as File Not Found Error etc 
+            # Bug found while testing bug-fix-filter-data
+            # Crashes when opening a file that does not exist
+            try:               
+                with open(self.filepath, 'r') as file_object:
+                    for line in file_object:
+                        if self.check_all_matches(line, self.__filters):
+                            to_return += line    
+            except FileNotFoundError as e: 
+                logging.error(e)
+                raise FileNotFoundError()                                                                    
+            except (IOError) as e:
+                logging.error(e)
+                raise IOError()                  
+                              
         return to_return
 
     def get_requests(self):
